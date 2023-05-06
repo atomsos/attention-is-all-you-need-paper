@@ -1,17 +1,17 @@
 from tokenizers import Tokenizer
 from tokenizers.processors import TemplateProcessing
 from tokenizers import normalizers
-from tokenizers.normalizers import Lowercase, NFD, StripAccents
+from tokenizers.normalizers import Lowercase, NFD, StripAccents, BertNormalizer
 from tokenizers.trainers import BpeTrainer, WordLevelTrainer
 from tokenizers.models import WordLevel, BPE
-from tokenizers.pre_tokenizers import Whitespace,WhitespaceSplit
+from tokenizers.pre_tokenizers import Whitespace,WhitespaceSplit, BertPreTokenizer
 
 
 def get_tokenizer_bpe(data, vocab_size):
     # Configure tokenizer
     tokenizer = Tokenizer(BPE(unk_token="[UNK]"))
-    tokenizer.normalizer=normalizers.Sequence([NFD(),StripAccents(), Lowercase()])
-    tokenizer.pre_tokenizer = Whitespace()
+    tokenizer.normalizer=normalizers.Sequence([NFD(),StripAccents(), Lowercase(), BertNormalizer()])
+    tokenizer.pre_tokenizer = BertPreTokenizer()
     trainer_src = BpeTrainer(vocab_size=vocab_size, special_tokens=["[PAD]", "[UNK]", "[BOS]","[EOS]"])
 
     # Configure batch iterators to train tokenizers from memory
@@ -37,8 +37,8 @@ def get_tokenizer_bpe(data, vocab_size):
 def get_tokenizer_wordlevel(data, vocab_size):
     # Configure tokenizer
     tokenizer = Tokenizer(WordLevel(unk_token="[UNK]"))
-    tokenizer.normalizer=normalizers.Sequence([NFD(),StripAccents(), Lowercase()])
-    tokenizer.pre_tokenizer = WhitespaceSplit()
+    tokenizer.normalizer=normalizers.Sequence([NFD(),StripAccents(), Lowercase(), BertNormalizer()])
+    tokenizer.pre_tokenizer = BertPreTokenizer()
     trainer_src = WordLevelTrainer(vocab_size=vocab_size, special_tokens=["[PAD]", "[UNK]", "[BOS]","[EOS]"]) 
 
     # Configure batch iterators to train tokenizers from memory

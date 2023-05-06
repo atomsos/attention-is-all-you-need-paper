@@ -23,7 +23,7 @@ c_handler.setFormatter(c_format)
 # Create a file handler
 os.makedirs(os.path.join(wandb.config.RUNS_FOLDER_PTH,wandb.config.RUN_NAME), exist_ok=True)
 log_pth=os.path.join(wandb.config.RUNS_FOLDER_PTH,wandb.config.RUN_NAME,'log.txt')
-f_handler = logging.FileHandler(log_pth)
+f_handler = logging.FileHandler(log_pth, encoding='utf-8')
 f_handler.setLevel(logging.DEBUG)
 f_format=logging.Formatter(logfmt_str)
 f_handler.setFormatter(f_format)

@@ -69,12 +69,13 @@ def get_data(example_cnt):
 def preprocess_data(data, tokenizer, max_seq_len, test_proportion):
 
     # Tokenize
-    def tokenize(example):
+    def tokenize(examples):
         return {
-            'translation_src': tokenizer.encode(example['translation_src']).ids,
-            'translation_trg': tokenizer.encode(example['translation_trg']).ids,
+            'translation_src': [tokenizer.encode(translation_src).ids for translation_src in examples['translation_src']],
+            'translation_trg': [tokenizer.encode(translation_trg).ids for translation_trg in examples['translation_trg']],
         }
-    data=data.map(tokenize)
+    print("Tokenize")
+    data=data.map(tokenize, batched=True, batch_size=10000)
 
     # Compute sequence lengths
     def sequence_length(example):
@@ -82,18 +83,23 @@ def preprocess_data(data, tokenizer, max_seq_len, test_proportion):
             'length_src': [len(item) for item in example['translation_src']],
             'length_trg': [len(item) for item in example['translation_trg']],
         }
+    print("Compute sequence lengths")
     data=data.map(sequence_length, batched=True, batch_size=10000)
 
     # Filter by sequence lengths
-    def filter_long(example):
-        return example['length_src']<= max_seq_len and example['length_trg']<=max_seq_len
-    data=data.filter(filter_long)
+    print("Filter by sequence lengths")
+    def filter_long(examples):
+        return [l_src <= max_seq_len and l_trg <=max_seq_len for l_src, l_trg in zip(examples['length_src'], examples['length_trg'])]
+    data=data.filter(filter_long, batched=True, batch_size=10000)
 
     # Split 
+    print("Split")
     data=data.train_test_split(test_size=test_proportion)
 
     # Sort each split by length for dynamic batching (see CustomBatchSampler)
+    print("Start sorting")
     data['train']=data['train'].sort('length_src', reverse=True)
+    print("Traing sorted")
     data['test']=data['test'].sort('length_src', reverse=True)
 
     return data

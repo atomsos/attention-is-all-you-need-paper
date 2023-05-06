@@ -17,7 +17,7 @@ from architectures.machine_translation_transformer import MachineTranslationTran
 import wandb
 from config import configs
 config_name='unofficial_single_gpu_config' # MODIFY THIS TO CHANGE CONFIGURATION
-wandb.init(config=configs[config_name],project="attention-is-all-you-need-paper", entity="bkoch4142")
+wandb.init(config=configs[config_name],project="attention-is-all-you-need-paper")
 
 # Configure Logging
 from utils.logconf import logging

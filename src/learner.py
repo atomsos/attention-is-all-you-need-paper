@@ -60,8 +60,14 @@ class Learner:
             self.model.eval()
 
         dl=self.train_dl if is_train else self.val_dl
-        for self.batch_idx,self.batch in enumerate(dl):
-            self.one_batch()
+
+        from tqdm.auto import tqdm
+        total = len(self.train_dl.dataset)
+        with tqdm(total=total, ncols=50) as pbar:
+            for self.batch_idx,self.batch in enumerate(dl):
+                self.xb, self.yb=self.batch
+                self.one_batch()
+                pbar.update(len(self.xb))
         self('after_epoch')
 
     def fit(self, n_epochs):
